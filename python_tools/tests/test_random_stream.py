@@ -11,8 +11,9 @@ from core.logger import SessionLogger
 from core.uart_client import ChaCha20UART, CMD_INIT, CMD_DATA, CMD_END, RESP_ACK_INIT, RESP_ACK_DATA
 from core.chacha_ref import chacha20_encrypt
 
-def run_test(port, console_log):
-    logger = SessionLogger("RandomStreamTest", print_to_console=console_log)
+def run_test(port, console_log, logger=None):
+    if not logger:
+        logger = SessionLogger("RandomStreamTest", print_to_console=console_log)
     logger.log(f"Connecting to {port}...")
     
     try:

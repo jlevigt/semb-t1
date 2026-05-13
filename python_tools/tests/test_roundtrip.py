@@ -22,8 +22,9 @@ def stream_data(dev, logger, data_in, expected_size):
         processed_data.extend(payload)
     return processed_data
 
-def run_test(port, console_log):
-    logger = SessionLogger("RoundtripTest", print_to_console=console_log)
+def run_test(port, console_log, logger=None):
+    if not logger:
+        logger = SessionLogger("RoundtripTest", print_to_console=console_log)
     logger.log(f"Connecting to {port}...")
     
     try:
