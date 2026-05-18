@@ -48,6 +48,7 @@ void print_menu() {
     printf(CLR_MENU "3." CLR_RESET " Demo Nonce Reuse Vulnerability\n");
     printf(CLR_MENU "4." CLR_RESET " Test with 8KB of data\n");
     printf(CLR_MENU "5." CLR_RESET " Test with Custom User Input\n");
+    printf(CLR_MENU "6." CLR_RESET " Test with OpenSSL version\n");
     printf(CLR_MENU "0." CLR_RESET " Exit\n");
     printf("\nSelection: ");
     fflush(stdout);
@@ -84,6 +85,12 @@ int main() {
                 clear_terminal();
                 // If the user inputs text, we need to be careful with terminal state
                 test_user_input();
+                wait_for_keypress();
+                break;
+            case '6':
+                clear_terminal();
+                // If the user inputs text, we need to be careful with terminal state
+                test_openssl();
                 wait_for_keypress();
                 break;
             case '0':
