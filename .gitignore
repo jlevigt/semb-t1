@@ -1,6 +1,6 @@
 # Binários compilados
-/bin
-/data
+/t1/bin
+/t2/data
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

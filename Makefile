@@ -1,21 +1,21 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -O3 -Iinclude
-SRC_CRYPTO = src/chacha20.c src/openssl_chacha20.c
-SRC_TESTS = tests/test_vectors.c tests/test_nonce_reuse.c tests/demo_basic.c tests/test_interactive.c tests/test_8kb.c tests/test_openssl.c
-BIN_DIR = bin
+CFLAGS = -Wall -Wextra -O3 -It1/include
+SRC_CRYPTO = t1/src/chacha20.c t1/src/openssl_chacha20.c
+SRC_TESTS = t1/tests/test_vectors.c t1/tests/test_nonce_reuse.c t1/tests/demo_basic.c t1/tests/test_interactive.c t1/tests/test_8kb.c t1/tests/test_openssl.c
+BIN_DIR = t1/bin
 EXTRA_ARGS = -l crypto
 
 all: $(BIN_DIR)/chacha20_tui
 
-$(BIN_DIR)/chacha20_tui: main.c $(SRC_CRYPTO) $(SRC_TESTS)
+$(BIN_DIR)/chacha20_tui: t1/main.c $(SRC_CRYPTO) $(SRC_TESTS)
 	@mkdir -p $(BIN_DIR)
 	$(CC) $(CFLAGS) $^ -o $@ $(EXTRA_ARGS)
 
 clean:
 	rm -rf $(BIN_DIR)
-	rm -rf python_tools/data
+	rm -rf t2/data
 
 clean-data:
-	rm -rf python_tools/data
+	rm -rf t2/data
 
 .PHONY: all clean clean-data
