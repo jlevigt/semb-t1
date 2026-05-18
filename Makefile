@@ -13,5 +13,9 @@ $(BIN_DIR)/chacha20_tui: main.c $(SRC_CRYPTO) $(SRC_TESTS)
 
 clean:
 	rm -rf $(BIN_DIR)
+	rm -rf python_tools/data
 
-.PHONY: all clean
+clean-data:
+	rm -rf python_tools/data
+
+.PHONY: all clean clean-data

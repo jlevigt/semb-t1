@@ -13,10 +13,14 @@ RESP_ACK_END  = 0x83
 RESP_ERROR    = 0xFF
 
 class ChaCha20UART:
-    def __init__(self, port, logger, baudrate=38400, timeout=2):
+    def __init__(self, port, logger=None, baudrate=38400, timeout=2):
         self.ser = serial.Serial(port, baudrate, timeout=timeout)
         self.logger = logger
         time.sleep(2) # Wait for STM32 reset if necessary
+
+    def log(self, message):
+        if self.logger:
+            self.logger.log(message)
 
     def format_packet_log(self, direction, cmd, size, payload, checksum):
         return (f"{direction}\n"
@@ -35,31 +39,31 @@ class ChaCha20UART:
         size = len(payload)
         cs = self.calculate_checksum(cmd, size, payload)
         packet = struct.pack("BB", cmd, size) + payload + struct.pack("B", cs)
-        self.logger.log(self.format_packet_log("TX ->", cmd, size, payload, cs))
+        self.log(self.format_packet_log("TX ->", cmd, size, payload, cs))
         self.ser.write(packet)
 
     def receive_packet(self):
         header = self.ser.read(2)
         if not header or len(header) < 2:
-            self.logger.log("RX <- Timeout or incomplete header\n")
+            self.log("RX <- Timeout or incomplete header\n")
             return None, None, None
         
         cmd, size = struct.unpack("BB", header)
         payload = self.ser.read(size)
         if len(payload) < size:
-            self.logger.log("RX <- Timeout or incomplete payload\n")
+            self.log("RX <- Timeout or incomplete payload\n")
             return None, None, None
             
         received_cs = self.ser.read(1)
         if not received_cs:
-            self.logger.log("RX <- Timeout on checksum\n")
+            self.log("RX <- Timeout on checksum\n")
             return None, None, None
             
         calculated_cs = self.calculate_checksum(cmd, size, payload)
-        self.logger.log(self.format_packet_log("RX <-", cmd, size, payload, received_cs[0]))
+        self.log(self.format_packet_log("RX <-", cmd, size, payload, received_cs[0]))
         
         if calculated_cs != received_cs[0]:
-            self.logger.log(f"Checksum Error: Calc {calculated_cs} != Recv {received_cs[0]}\n")
+            self.log(f"Checksum Error: Calc {calculated_cs} != Recv {received_cs[0]}\n")
             return None, None, None
             
         return cmd, size, payload
