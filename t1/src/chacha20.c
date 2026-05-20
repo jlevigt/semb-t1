@@ -1,3 +1,68 @@
+/**
+ * @file chacha20.c
+ * @brief Implementação do algoritmo de criptografia de fluxo ChaCha20.
+ *
+ * @section Descrição Geral
+ * Este módulo implementa o algoritmo ChaCha20, um algoritmo de criptografia
+ * de fluxo que gera um fluxo de bytes pseudo-aleatórios (keystream) que é
+ * misturado com os dados de entrada. É frequentemente utilizado como parte
+ * do protocolo de autenticação e criptografia AES-GCM ou para criptografia
+ * independente (ex: ChaCha20-Poly1305).
+ *
+ * @copyright Copyright (c) 2026 Anilton Magalhães de Castro, João Levi Guedes Teles
+ *
+ * @version 1.0
+ * @date 22/04/2026
+ *
+ * @license MIT License
+ * @verbatim
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ * @endverbatim
+ *
+ * @note Como Usar (Help)
+ * O algoritmo funciona processando blocos de dados contíguos. Para obter o fluxo
+ * criptografado completo, você deve chamar a função de processamento quantas vezes
+ * forem necessárias para cobrir o tamanho do arquivo ou buffer desejado, ou
+ * implementar um loop sobre os dados de entrada.
+ *
+ * @fn void chacha20_xor(uint8_t *out, const uint8_t *in, size_t len, const uint8_t key[32], const uint8_t nonce[12], uint32_t counter)
+ * 
+ * @param[out] out     Ponteiro para o buffer onde os dados cifrados (ciphertext)
+ *                     serão armazenados. Pode ser o mesmo que o input.
+ * @param[in] in       Ponteiro para o buffer de dados (plaintext) a serem
+ *                     processados.
+ * @param[in] len      Tamanho em bytes dos dados a serem processados.
+ * @param[in] key      Um array de 32 bytes (256 bits) contendo a chave secreta.
+ * @param[in] nonce    Um array de 12 bytes (96 bits) servindo como vetor de
+ *                     inicialização e número não repetível (IV).
+ * @param[in] counter  Contador para formar o estado da keystream.
+ *
+ *
+ * @section Plataformas Alvo
+ * - Linux (GCC)
+ * - Windows (MinGW/MSVC)
+ * - Unix/Linux
+ *
+ * @see RFC 8439 - ChaCha20 and Poly1305 for IETF Protocol Specification
+ */
+
+
 #include "../include/chacha20.h"
 #include <string.h>
 
@@ -71,7 +136,7 @@ static void chacha20_block(const uint32_t input_state[16], uint8_t keystream[64]
     memcpy(x, input_state, sizeof(x));
 
     // 10 iterations of double rounds (column round + diagonal round) = 20 total rounds
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < CHACHA20_ROUNDS; i+=2) {
         // Column rounds (vertical)
         quarter_round(&x[0], &x[4], &x[8],  &x[12]);
         quarter_round(&x[1], &x[5], &x[9],  &x[13]);
